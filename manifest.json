@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Youtube Category Extractor",
+  "version": "1.0",
+  "description": "Redirects to YouTube homepage if the current video is categorized as Gaming.",
+  "permissions": ["activeTab"],
+  "content_scripts": [
+    {
+      "matches": ["*://www.youtube.com/watch*"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon-128.png"
+  },
+  "icons": {
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
