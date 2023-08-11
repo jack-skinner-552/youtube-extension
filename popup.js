@@ -61,9 +61,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Handle updates from the background script
 port.onMessage.addListener(message => {
   console.log("Received message:", message);
-  if (message.countdownValue !== undefined) {
+  if (message.countdownDuration !== undefined) {
     const countdownElement = document.getElementById('countdown');
-    countdownElement.textContent = formatTime(message.countdownValue);
+    countdownElement.textContent = formatTime(message.countdownDuration);
   }
   if (message.isCountdownExpired === true) {
     const countdownElement = document.getElementById('countdown');

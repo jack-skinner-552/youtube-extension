@@ -102,7 +102,7 @@ async function startCountdown(tabId) {
 
       // Send countdown value to the popup script
       if (popupPort) {
-        popupPort.postMessage({ countdownValue: countdownDuration, isCountdownExpired: false });
+        popupPort.postMessage({ countdownDuration: countdownDuration, isCountdownExpired: false });
       }
     } else {
       clearInterval(countdownInterval);
@@ -126,7 +126,7 @@ async function startCountdown(tabId) {
 
           // Send countdown value to the popup script
           if (popupPort) {
-            popupPort.postMessage({ countdownValue: 0, isCountdownExpired: true });
+            popupPort.postMessage({ countdownDuration: 0, isCountdownExpired: true });
           }
         } catch (error) {
           console.error('Error fetching video details:', error);
@@ -204,6 +204,16 @@ chrome.tabs.onActivated.addListener(activeInfo => {
   chrome.tabs.get(activeInfo.tabId, tab => {
     updateIcon(tab.id, tab.url);
   });
+});
+
+// Listen for extension installation or update
+chrome.runtime.onInstalled.addListener(details => {
+  if (details.reason === "install" || details.reason === "update") {
+    // Set countdownExpired to false when the extension is installed or updated
+    chrome.storage.local.set({ countdownExpired: false }, () => {
+      console.log("countdownExpired set to false after installation/update.");
+    });
+  }
 });
 
 // Listen for messages from content script, popup script, and others
