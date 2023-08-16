@@ -1,6 +1,25 @@
 // background.js (Service Worker)
 
-const apiKey = 'AIzaSyCVVvtNww2mZYAnJCVUhRSG3K1gy5Ixhxo';
+// Get the URL of the apiKey.txt file in the extension's directory
+const apiKeyFileURL = chrome.runtime.getURL('apiKey.txt');
+
+// Fetch the content of the apiKey.txt file
+fetch(apiKeyFileURL)
+  .then(response => response.text())
+  .then(apiKey => {
+    // Trim any extra spaces or newlines from the apiKey
+    apiKey = apiKey.trim();
+
+    // Use the apiKey in your extension logic
+    console.log('API Key:', apiKey);
+
+    // Now you can use the apiKey in your extension logic
+    // For example, you might use it to make API requests
+  })
+  .catch(error => {
+    console.error('Error reading apiKey.txt:', error);
+  });
+  
 let countdownInterval = null;
 let countdownDuration = 1 * 10; // 10 second countdown
 let storedCategoryNames = [];
