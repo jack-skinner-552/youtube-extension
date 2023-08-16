@@ -229,7 +229,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 // Listen for connection from content script
 chrome.runtime.onConnect.addListener(port => {
   if (port.name === "content-script") {
+    console.log("Connected to content script.");
     port.onMessage.addListener(message => {
+      console.log("Received message from content script:", message);
       if (message.videoId) {
         // Process the videoId as needed
         const tabId = port.sender.tab.id;

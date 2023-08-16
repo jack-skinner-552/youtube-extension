@@ -4,7 +4,7 @@
 const port = chrome.runtime.connect({ name: "content-script" });
 
 // Listen for navigation changes within the same tab
-window.addEventListener('yt-navigate-finish', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const videoId = new URLSearchParams(window.location.search).get('v');
   if (videoId) {
     if (port && port.sender && port.sender.tab) {
