@@ -1,30 +1,32 @@
 // content.js
 
-// Establish a connection with the background script
-const port = chrome.runtime.connect({ name: "content-script" });
+// Extract video ID from the current URL
+var videoID = youtube_parser(window.location.href);
 
-// Listen for navigation changes within the same tab
-document.addEventListener('DOMContentLoaded', () => {
-  const videoId = new URLSearchParams(window.location.search).get('v');
-  if (videoId) {
-    if (port && port.sender && port.sender.tab) {
-      port.postMessage({ videoId });
-    } else {
-      console.log("Connection no longer exists.");
-    }
+// Function to extract YouTube video ID from URL
+function youtube_parser(url) {
+  var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
+  var searchExp = /https:\/\/www\.youtube\.com\/results\?search_query=(.*)/;
+  var match = url.match(regExp);
+  var searched = url.match(searchExp);
+  if (searched) {
+    localStorage.setItem("search", url);
+  }
+  return match && match[7].length == 11 ? match[7] : null;
+}
+
+
+// Listen for messages from the background script
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.action === "redirect") {
+    // Perform the redirection logic here
+    window.location.href = "https://www.youtube.com/";
+  } else if (message.action === "getVideoID") {
+    videoID = youtube_parser(window.location.href);
+    chrome.runtime.sendMessage({ action: "sendVideoID", videoID: videoID});
+  } else if (message.action === "testMessage") {
+    console.log("Test message received!");
   }
 });
-
-// Check if it's a YouTube video page
-if (window.location.hostname === 'www.youtube.com' && window.location.pathname === '/watch') {
-  // Extract video ID from the URL
-  const videoId = new URLSearchParams(window.location.search).get('v');
-
-  if (videoId) {
-    chrome.runtime.sendMessage("Current page: Youtube.");
-    // Send video ID to the background script
-    port.postMessage({ videoId });
-  }
-}
 
 
