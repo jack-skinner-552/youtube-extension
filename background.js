@@ -29,6 +29,7 @@ let blockedCategories = ["Music", "Gaming"]
 let countdownInterval = null;
 let activeTabId;
 let videoID;
+let categoryNames = null;
 
 function getCategoryNames(categories) {
     const categoryMapping = {
@@ -65,14 +66,15 @@ function getCategoryNames(categories) {
       "43": "Shows",
       "44": "Trailers"
     };
-    const categoryNames = categories.map(categoryId => categoryMapping[categoryId] || "Unknown");
-    return categoryNames;
+    const categoryN = categories.map(categoryId => categoryMapping[categoryId] || "Unknown");
+    return categoryN;
 }
 
 
 
 // Fetch video details from YouTube Data API
 function fetchVideoDetails(videoID, tabId) {
+    console.log("videoID:", videoID, "tabId:", tabId);
     return new Promise((resolve, reject) => {
       console.log("apiKey:", apiKey);
       // Construct API URL
@@ -88,7 +90,9 @@ function fetchVideoDetails(videoID, tabId) {
             const categories = data.items[0].snippet.categoryId;
   
             // Return category names
-            const categoryNames = getCategoryNames([categories]);
+            categoryNames = getCategoryNames([categories]);
+            chrome.storage.local.set({ categoryNames });
+
             if (blockedCategories.some(category => categoryNames.includes(category))) {
                 startCountdown(tabId, videoID);
               }
@@ -139,6 +143,7 @@ function startCountdown(tabId, videoID) {
 function stopCountdown() {
   if (countdownInterval) {
     clearInterval(countdownInterval);
+    chrome.storage.local.remove('categoryNames');
   }
 }
 
@@ -199,7 +204,10 @@ chrome.tabs.onActivated.addListener(activeInfo => {
   // Check if the active tab's URL is a YouTube video with a blocked category
   chrome.tabs.get(activeTabId, tab => {
     if (tab.url && tab.url.includes('www.youtube.com/watch')) {
-      fetchVideoDetails(videoID, activeTabId); // Check category and start countdown
+      // Wait for a short delay (e.g., 500ms) before sending the message
+      setTimeout(() => {
+        chrome.tabs.sendMessage(activeTabId, { action: "getVideoID" });
+      }, 500);
     } else {
       stopCountdown(); // Stop countdown if the tab is not a YouTube video
     }
