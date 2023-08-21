@@ -3,10 +3,10 @@
   "name": "Youtube Category Extractor",
   "version": "1.0",
   "description": "Redirects to YouTube homepage if the current video is categorized as Gaming.",
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab", "scripting", "storage", "tabs", "webNavigation"],
   "content_scripts": [
     {
-      "matches": ["*://www.youtube.com/watch*"],
+      "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
   ],
@@ -20,5 +20,10 @@
   },
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "host_permissions": [
+    "<all_urls>",
+    "https://www.youtube.com/*",
+    "https://www.googleapis.com/*"
+  ]
 }

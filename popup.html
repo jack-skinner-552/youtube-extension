@@ -2,10 +2,17 @@
 <html>
 <head>
   <title>YouTube Category Extractor</title>
+  <style>
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <h1>Video Categories:</h1>
-  <ul id="categoryList"></ul>
+  <h2>Countdown Timer:</h2>
+  <p id="countdown">Loading...</p>
+  <h2 class="categoriesHeader hidden">Video Categories:</h2>
+  <p id="categories"></p>
   <script src="popup.js"></script>
 </body>
 </html>
