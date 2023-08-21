@@ -5,7 +5,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateCountdownDisplay(remainingTime) {
     if (remainingTime > 0) {
-      countdownElement.textContent = `Countdown: ${remainingTime} seconds remaining`;
+      const hours = Math.floor(remainingTime / 3600);
+      const minutes = Math.floor((remainingTime % 3600) / 60);
+      const seconds = remainingTime % 60;
+      const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      countdownElement.textContent = `Countdown: ${formattedTime} remaining`;
     } else if (remainingTime <= 0) {
       countdownElement.textContent = "Time has expired.";
     }

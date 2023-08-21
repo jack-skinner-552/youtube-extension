@@ -23,9 +23,10 @@ fetch(apiKeyFileURL)
     console.error('Error reading apiKey.txt:', error);
   });
 
-let remainingTime = 10; // 10 seconds   // Adjust the countdown time as needed
+let originalCountdownTime = 60 * 60; // 1 hour  // Adjust the countdown as needed
+let remainingTime = 60 * 60; 
 chrome.storage.local.set({ remainingTime });
-let blockedCategories = ["Music", "Gaming"]
+let blockedCategories = ["Film & Animation", "Gaming", "News & Politics", "Shows", "Movies"]
 let countdownInterval = null;
 let activeTabId;
 let videoID;
@@ -70,7 +71,20 @@ function getCategoryNames(categories) {
     return categoryN;
 }
 
+// Function to reset remainingTime at midnight
+function resetCountdownAtMidnight() {
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 0, 0); // Set to midnight
+  const timeUntilMidnight = midnight - now;
 
+  setTimeout(() => {
+    remainingTime = originalCountdownTime;
+    chrome.storage.local.set({ remainingTime: originalCountdownTime }, () => {
+      console.log('Countdown time reset to original value at midnight.');
+    });
+  }, timeUntilMidnight);
+}
 
 // Fetch video details from YouTube Data API
 function fetchVideoDetails(videoID, tabId) {
@@ -146,6 +160,9 @@ function stopCountdown() {
     chrome.storage.local.remove('categoryNames');
   }
 }
+
+resetCountdownAtMidnight();
+setInterval(resetCountdownAtMidnight, 24 * 60 * 60 * 1000);
 
 chrome.runtime.onInstalled.addListener(async () => {
 
