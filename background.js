@@ -31,6 +31,7 @@ let countdownInterval = null;
 let activeTabId;
 let videoID;
 let categoryNames = null;
+let countdownActive = false;
 
 function getCategoryNames(categories) {
     const categoryMapping = {
@@ -108,6 +109,7 @@ function fetchVideoDetails(videoID, tabId) {
             chrome.storage.local.set({ categoryNames });
 
             if (blockedCategories.some(category => categoryNames.includes(category))) {
+                countdownActive = true;
                 startCountdown(tabId, videoID);
               }
             resolve(categoryNames);
@@ -122,11 +124,14 @@ function fetchVideoDetails(videoID, tabId) {
   });
 }
   
-function updateIcon(tabId, tabUrl) {
+function updateIcon(tabId, tabUrl, countdownActive) {
   const timestamp1 = new Date().toLocaleTimeString();
-  if (tabUrl && tabUrl.includes('youtube.com')) {
+  if (tabUrl && tabUrl.includes('youtube.com') && countdownActive == false) {
     chrome.action.setIcon({ tabId, path: 'icon-128.png' });
     console.log(`${tabId} Current site is Youtube. ${timestamp1} `)
+  } else if (tabUrl && tabUrl.includes('youtube.com/watch') && countdownActive == true){
+    chrome.action.setIcon({ tabId, path: 'icon-128-red.png' });
+    console.log(`${tabId} Current site is Youtube with blocked video. ${timestamp1} `)
   } else {
     chrome.action.setIcon({ tabId, path: 'icon-128-gray.png' });
     console.log(`${tabId} Current site not Youtube. ${timestamp1} `)
@@ -156,6 +161,7 @@ function startCountdown(tabId, videoID) {
 
 function stopCountdown() {
   if (countdownInterval) {
+    countdownActive = false;
     clearInterval(countdownInterval);
     chrome.storage.local.remove('categoryNames');
   }
@@ -173,7 +179,7 @@ chrome.runtime.onInstalled.addListener(async () => {
   const filteredTabs = tabs.filter(tab => !tab.url.startsWith("chrome://"));
   
   for (const tab of filteredTabs) {
-    updateIcon(tab.id, tab.url);
+    updateIcon(tab.id, tab.url, countdownActive);
     chrome.scripting.executeScript({
       target: { tabId: tab.id },
       files: manifest.content_scripts[0].js,
@@ -183,7 +189,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 
 // Listen for tab updates
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  updateIcon(tabId, tab.url);
+  updateIcon(tabId, tab.url, countdownActive);
   if (changeInfo.url && tab.url.includes('www.youtube.com/watch')) {
     console.log("sending message");
     // Wait for a short delay (e.g., 500ms) before sending the message
