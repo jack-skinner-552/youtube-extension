@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const countdownElement = document.getElementById('countdown');
   const categoriesHeader = document.querySelector('.categoriesHeader');
   const categoriesElement = document.getElementById('categories');
+  const tagsHeader = document.querySelector('.tagsHeader');
+  const tagsElement = document.getElementById('tags');
 
   function updateCountdownDisplay(remainingTime) {
     if (remainingTime > 0) {
@@ -25,13 +27,26 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  function updateTagsDisplay(tags) {
+    if (tags && tags.length > 0) {
+      tagsElement.textContent = `${tags.join(', ')}`;
+      tagsHeader.classList.remove('hidden');
+    } else {
+      tagsElement.textContent = ""; // Clear the content
+      tagsHeader.classList.add('hidden'); // Hide the header
+    }
+  }
+
   // Get the remaining time from storage and update the display
-  chrome.storage.local.get(['remainingTime', 'categoryNames'], function (result) {
+  chrome.storage.local.get(['remainingTime', 'categoryNames', 'tags'], function (result) {
     if (result.remainingTime !== undefined) {
       updateCountdownDisplay(result.remainingTime);
     }
     if (result.categoryNames !== undefined) {
       updateCategoriesDisplay(result.categoryNames);
+    }
+    if (result.tags !== undefined) {
+      updateTagsDisplay(result.tags);
     }
   });
 
@@ -42,6 +57,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     if (changes.categoryNames !== undefined) {
       updateCategoriesDisplay(changes.categoryNames.newValue);
+    }
+    if (changes.tags !== undefined) {
+      updateTagsDisplay(changes.tags.newValue);
     }
   });
 });

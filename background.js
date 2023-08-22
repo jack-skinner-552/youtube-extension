@@ -26,12 +26,14 @@ fetch(apiKeyFileURL)
 let originalCountdownTime = 60 * 60; // 1 hour  // Adjust the countdown as needed
 let remainingTime = 60 * 60; 
 chrome.storage.local.set({ remainingTime });
-let blockedCategories = ["Film & Animation", "Gaming", "News & Politics", "Shows", "Movies"]
+let blockedCategories = ["Film & Animation", "Gaming", "News & Politics", "Shows", "Movies"];
+let blockedTags = ["tears of the kingdom", "Transformers"];
 let countdownInterval = null;
 let activeTabId;
 let videoID;
 let categoryNames = null;
 let countdownActive = false;
+let tags = null;
 
 function getCategoryNames(categories) {
     const categoryMapping = {
@@ -113,6 +115,17 @@ function fetchVideoDetails(videoID, tabId) {
                 startCountdown(tabId, videoID);
               }
             resolve(categoryNames);
+
+            // Extract tag information
+            tags = data.items[0].snippet.tags;
+            chrome.storage.local.set({ tags });
+
+            if (blockedTags.some(tag => tags.includes(tag))) {
+              countdownActive = true;
+              startCountdown(tabId, videoID);
+            }
+            resolve(tags);
+
           } else {
             reject(new Error('Video details not found.'));
           }
@@ -164,6 +177,7 @@ function stopCountdown() {
     countdownActive = false;
     clearInterval(countdownInterval);
     chrome.storage.local.remove('categoryNames');
+    chrome.storage.local.remove('tags');
   }
 }
 
