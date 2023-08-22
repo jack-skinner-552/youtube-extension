@@ -4,6 +4,25 @@ document.addEventListener('DOMContentLoaded', function () {
   const categoriesElement = document.getElementById('categories');
   const tagsHeader = document.querySelector('.tagsHeader');
   const tagsElement = document.getElementById('tags');
+  const body = document.body;
+
+  // Load data from storage and update the display
+  chrome.storage.local.get(['remainingTime', 'categoryNames', 'tags'], function (result) {
+    // Update countdown display
+    if (result.remainingTime !== undefined) {
+      updateCountdownDisplay(result.remainingTime);
+    }
+    
+    // Update categories display
+    if (result.categoryNames !== undefined) {
+      updateCategoriesDisplay(result.categoryNames);
+    }
+
+    // Update tags display
+    if (result.tags !== undefined) {
+      updateTagsDisplay(result.tags);
+    }
+  });
 
   function updateCountdownDisplay(remainingTime) {
     if (remainingTime > 0) {
@@ -19,21 +38,53 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateCategoriesDisplay(categoryNames) {
     if (categoryNames && categoryNames.length > 0) {
-      categoriesElement.textContent = `${categoryNames.join(', ')}`;
-      categoriesHeader.classList.remove('hidden');
+      chrome.storage.local.get('blockedCategories', function (result) {
+        const blockedCategories = result.blockedCategories || []; // Default to an empty array if not present
+  
+        const formattedCategoryNames = categoryNames.map(category => {
+          if (blockedCategories.includes(category)) {
+            return `<strong>${category}</strong>`;
+          } else {
+            return category;
+          }
+        });
+  
+        categoriesElement.innerHTML = formattedCategoryNames.join(', ');
+        categoriesHeader.classList.remove('hidden');
+      });
     } else {
-      categoriesElement.textContent = ""; // Clear the content
-      categoriesHeader.classList.add('hidden'); // Hide the header
+      categoriesElement.textContent = "";
+      categoriesHeader.classList.add('hidden');
+    }
+  }
+  
+  function updateTagsDisplay(tags) {
+    if (tags && tags.length > 0) {
+      chrome.storage.local.get('blockedTags', function (result) {
+        const blockedTags = result.blockedTags || []; // Default to an empty array if not present
+  
+        const formattedTags = tags.map(tag => {
+          if (blockedTags.includes(tag)) {
+            return `<strong>${tag}</strong>`;
+          } else {
+            return tag;
+          }
+        });
+  
+        tagsElement.innerHTML = formattedTags.join(', ');
+        tagsHeader.classList.remove('hidden');
+      });
+    } else {
+      tagsElement.textContent = "";
+      tagsHeader.classList.add('hidden');
     }
   }
 
-  function updateTagsDisplay(tags) {
-    if (tags && tags.length > 0) {
-      tagsElement.textContent = `${tags.join(', ')}`;
-      tagsHeader.classList.remove('hidden');
+  function updateWidth() {
+    if (body.scrollHeight > window.innerHeight) {
+      body.classList.add('wider');
     } else {
-      tagsElement.textContent = ""; // Clear the content
-      tagsHeader.classList.add('hidden'); // Hide the header
+      body.classList.remove('wider');
     }
   }
 
@@ -62,4 +113,8 @@ document.addEventListener('DOMContentLoaded', function () {
       updateTagsDisplay(changes.tags.newValue);
     }
   });
+
+  // Call the function on initial load and on window resize
+  updateWidth();
+  window.addEventListener('resize', updateWidth);
 });
