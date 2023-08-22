@@ -185,19 +185,34 @@ resetCountdownAtMidnight();
 setInterval(resetCountdownAtMidnight, 24 * 60 * 60 * 1000);
 
 chrome.runtime.onInstalled.addListener(async () => {
-
   const manifest = chrome.runtime.getManifest();
   
-  // Filter out tabs with "chrome://" URLs
-  const tabs = await chrome.tabs.query({ url: manifest.content_scripts[0].matches });
-  const filteredTabs = tabs.filter(tab => !tab.url.startsWith("chrome://"));
+  // Get all tabs
+  const tabs = await chrome.tabs.query({});
   
-  for (const tab of filteredTabs) {
+  for (const tab of tabs) {
+    
+    if (tab.url.startsWith("chrome://") || tab.url.startsWith("chrome-extension://") || tab.url.startsWith("https://chrome.google.com/webstore/")) {
+      continue; // Skip tabs with chrome:// or chrome-extension:// URLs
+    }
+    
+    // If the tab is snoozed, skip
+    if (tab.status === "suspended" || tab.status === "discarded" || tab.status === "unloaded") {
+      continue;
+    }
+    console.log(tab.url, tab.status);
     updateIcon(tab.id, tab.url, countdownActive);
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: manifest.content_scripts[0].js,
-    });
+    
+    // Execute content script for valid URLs
+    try {
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: manifest.content_scripts[0].js,
+      });
+    } catch (error) {
+      console.error(`Error executing content script for tab with URL: ${tab.url}`);
+      console.error(error);
+    }
   }
 });
 
