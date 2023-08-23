@@ -10,9 +10,7 @@ The YouTube Category Blocker Extension is a browser extension that empowers user
 
 - **Customizable Options:** The options page allows you to configure the categories and tags you want to block. You can update these preferences and save them for future use.
 
-- **Real-time Updates:** The extension dynamically updates the display to show blocked categories and tags in bold font.
-
-- **Responsive Popup:** The popup UI adjusts its width based on content length to ensure a smooth user experience.
+- **Real-time Updates:** The extension dynamically updates the display to show the categories and tags of the current Youtube video that's playing. Any blocked categories and tags will be displayed in bold font.
 
 - **Options Page:** The options page provides a user-friendly interface for configuring the extension's settings.
 
