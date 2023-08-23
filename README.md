@@ -30,7 +30,9 @@ The YouTube Category Blocker Extension is a browser extension that empowers user
 
 ## Installation
 
-1. Clone or download this repository to your local machine.
+0. Read these [instructions](https://developers.google.com/youtube/v3/getting-started) to get a Youtube API key, and save it in a file called apiKey.txt.
+
+1. Clone or download this repository to your local machine. Move apiKey.txt into the directory containing the repo files.
 
 2. Open your browser and go to `chrome://extensions/` (for Chrome and compatible browsers).
 
