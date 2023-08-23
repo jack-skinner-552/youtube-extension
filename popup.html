@@ -6,6 +6,15 @@
     .hidden {
       display: none;
     }
+    body {
+      max-width: 250px;
+      overflow: auto;
+      margin: 0;
+      padding: 10px;
+    }
+    .wider {
+      width: 250px;
+    }
   </style>
 </head>
 <body>
@@ -13,6 +22,9 @@
   <p id="countdown">Loading...</p>
   <h2 class="categoriesHeader hidden">Video Categories:</h2>
   <p id="categories"></p>
+  <h2 class="tagsHeader hidden">Video Tags:</h2>
+  <p id="tags" style="border: 1px solid black; height: 50px; width: 250px; overflow: auto;"></p>
+  <a href="options.html" target="_blank">Options</a>
   <script src="popup.js"></script>
 </body>
 </html>

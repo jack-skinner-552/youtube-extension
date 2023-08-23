@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkbox Options</title>
+    <script type="module" src="options.js"></script>
+</head>
+<body>
+    <h1>Set Block Filters</h1>
+    <form id="options">
+        <h2>Video Categories</h2>
+        <label><input type="checkbox" name="categories" value="Film & Animation">Film & Animation</label><br>
+        <label><input type="checkbox" name="categories" value="Autos & Vehicles">Autos & Vehicles</label><br>
+        <label><input type="checkbox" name="categories" value="Music">Music</label><br>
+        <label><input type="checkbox" name="categories" value="Pets & Animals">Pets & Animals</label><br>
+        <label><input type="checkbox" name="categories" value="Sports">Sports</label><br>
+        <label><input type="checkbox" name="categories" value="Short Movies">Short Movies</label><br>
+        <label><input type="checkbox" name="categories" value="Travel & Events">Travel & Events</label><br>
+        <label><input type="checkbox" name="categories" value="Gaming">Gaming</label><br>
+        <label><input type="checkbox" name="categories" value="Videoblogging">Videoblogging</label><br>
+        <label><input type="checkbox" name="categories" value="People & Blogs">People & Blogs</label><br>
+        <label><input type="checkbox" name="categories" value="Comedy">Comedy</label><br>
+        <label><input type="checkbox" name="categories" value="Entertainment">Entertainment</label><br>
+        <label><input type="checkbox" name="categories" value="News & Politics">News & Politics</label><br>
+        <label><input type="checkbox" name="categories" value="Howto & Style">Howto & Style</label><br>
+        <label><input type="checkbox" name="categories" value="Education">Education</label><br>
+        <label><input type="checkbox" name="categories" value="Science & Technology">Science & Technology</label><br>
+        <label><input type="checkbox" name="categories" value="Nonprofits & Activism">Nonprofits & Activism</label><br>
+        <label><input type="checkbox" name="categories" value="Shows">Shows</label><br>
+        <label><input type="checkbox" name="categories" value="Trailers">Trailers</label><br>
+        <h2>Movie Genres</h2>
+        <label><input type="checkbox" name="categories" value="Movies">Movies</label><br>
+        <label><input type="checkbox" name="categories" value="Anime/Animation">Anime/Animation</label><br>
+        <label><input type="checkbox" name="categories" value="Action/Adventure">Action/Adventure</label><br>
+        <label><input type="checkbox" name="categories" value="Classics">Classics</label><br>
+        <label><input type="checkbox" name="categories" value="Comedy (Movie)">Comedy</label><br>
+        <label><input type="checkbox" name="categories" value="Documentary">Documentary</label><br>
+        <label><input type="checkbox" name="categories" value="Drama">Drama</label><br>
+        <label><input type="checkbox" name="categories" value="Family">Family</label><br>
+        <label><input type="checkbox" name="categories" value="Foreign">Foreign</label><br>
+        <label><input type="checkbox" name="categories" value="Horror">Horror</label><br>
+        <label><input type="checkbox" name="categories" value="Sci-Fi/Fantasy">Sci-Fi/Fantasy</label><br>
+        <label><input type="checkbox" name="categories" value="Thriller">Thriller</label><br>
+        <label><input type="checkbox" name="categories" value="Shorts">Shorts</label><br>
+
+        <!-- Large textarea for tags -->
+        <label for="tags">Tags:</label><br>
+        <textarea id="tags" name="tags" rows="5" cols="40" placeholder="Enter blocked tags, separated by commas"></textarea><br>
+        <!-- Save button -->
+        <div class="save-button-container">
+            <button type="button" id="saveButton">Save</button>
+            <div id="statusText"></div>
+        </div>
+    </form>
+    <div class="footer"><p>Extension icon by <a href="https://icons8.com/" target="_blank">icons8</a></p></div>
+</body>
+</html>

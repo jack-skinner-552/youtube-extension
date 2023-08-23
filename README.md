@@ -4,23 +4,31 @@ The YouTube Category Blocker Extension is a browser extension that empowers user
 
 ## Features
 
-- **Block Specific Video Categories**: Users can customize the extension to block videos from specific categories that they find distracting or irrelevant.
+- **Countdown Timer:** The extension displays a countdown timer that shows how much time you have left for watching YouTube videos.
 
-- **Countdown Timer**: The extension includes a countdown timer that alerts users before redirecting them away from a blocked video, allowing them to make an informed decision about continuing to watch.
+- **Blocked Categories and Tags:** You can specify which categories and tags you want to block. The extension will identify videos with these categories and tags and prevent you from watching them.
 
-- **Midnight Reset**: The extension automatically resets the countdown timer to its original value every midnight, ensuring a fresh start for the next day's browsing.
+- **Customizable Options:** The options page allows you to configure the categories and tags you want to block. You can update these preferences and save them for future use.
 
-- **Customizable Time Interval**: Users can customize the countdown time interval based on their preferences, offering a flexible solution to manage video consumption.
+- **Real-time Updates:** The extension dynamically updates the display to show blocked categories and tags in bold font.
 
-- **Popup Interface**: The extension provides an intuitive popup interface that displays the remaining countdown time and the categories of the video being watched.
+- **Responsive Popup:** The popup UI adjusts its width based on content length to ensure a smooth user experience.
 
-## Getting Started
+- **Options Page:** The options page provides a user-friendly interface for configuring the extension's settings.
 
-1. Install the extension in your preferred browser (currently supported on Chrome and compatible Chromium-based browsers).
+## How to Use
 
-2. Customize the blocked categories and countdown time interval in the extension settings.
+1. Install the extension from the browser extension store.
 
-3. When you navigate to a YouTube video, the extension will check its category. If it's a blocked category, the countdown timer will start. You can choose to continue watching or be redirected away when the countdown ends.
+2. Click the extension icon to open the popup.
+
+3. The popup will display the countdown timer and the categories and tags of the current Youtube video that's playing. Any blocked categories and tags will be displayed in bold font.
+
+4. Click the "Options" link to open the options page.
+
+5. On the options page, select the categories and tags you want to block and click the "Save" button.
+
+6. The extension will apply the updated settings, and the popup will reflect the changes.
 
 ## Installation
 
@@ -54,3 +62,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 This extension is developed and maintained by a third-party contributor and is not affiliated with YouTube or Google. Use this extension responsibly and respect YouTube's terms of service and community guidelines.
 
+Extension icon by [icons8](https://icons8.com/)

@@ -26,12 +26,14 @@ fetch(apiKeyFileURL)
 let originalCountdownTime = 60 * 60; // 1 hour  // Adjust the countdown as needed
 let remainingTime = 60 * 60; 
 chrome.storage.local.set({ remainingTime });
-let blockedCategories = ["Film & Animation", "Gaming", "News & Politics", "Shows", "Movies"]
+let blockedCategories = ["Film & Animation", "Gaming", "News & Politics", "Shows", "Movies"];
+let blockedTags = ["tears of the kingdom", "Transformers"];
 let countdownInterval = null;
 let activeTabId;
 let videoID;
 let categoryNames = null;
 let countdownActive = false;
+let tags = null;
 
 function getCategoryNames(categories) {
     const categoryMapping = {
@@ -108,11 +110,17 @@ function fetchVideoDetails(videoID, tabId) {
             categoryNames = getCategoryNames([categories]);
             chrome.storage.local.set({ categoryNames });
 
-            if (blockedCategories.some(category => categoryNames.includes(category))) {
+            // Extract tag information
+            tags = data.items[0].snippet.tags;
+            chrome.storage.local.set({ tags });
+
+            if (blockedCategories.some(category => categoryNames.includes(category)) || blockedTags.some(tag => tags.includes(tag))) {
                 countdownActive = true;
                 startCountdown(tabId, videoID);
               }
-            resolve(categoryNames);
+
+            resolve(categoryNames, tags);
+
           } else {
             reject(new Error('Video details not found.'));
           }
@@ -163,28 +171,57 @@ function stopCountdown() {
   if (countdownInterval) {
     countdownActive = false;
     clearInterval(countdownInterval);
-    chrome.storage.local.remove('categoryNames');
   }
+}
+
+function clearCategoriesAndTags() {
+  console.log("removed categoryNames and tags");
+  chrome.storage.local.remove('categoryNames');
+  chrome.storage.local.remove('tags');
 }
 
 resetCountdownAtMidnight();
 setInterval(resetCountdownAtMidnight, 24 * 60 * 60 * 1000);
 
 chrome.runtime.onInstalled.addListener(async () => {
-
   const manifest = chrome.runtime.getManifest();
+
+   // Get blocked categories and tags from storage
+   chrome.storage.local.get(['blockedCategories', 'blockedTags'], async function (result) {
+    blockedCategories = result.blockedCategories || blockedCategories;
+    blockedTags = result.blockedTags || blockedTags;
+    console.log("Blocked Categories:", blockedCategories);
+    console.log("Blocked Tags:", blockedTags);
   
-  // Filter out tabs with "chrome://" URLs
-  const tabs = await chrome.tabs.query({ url: manifest.content_scripts[0].matches });
-  const filteredTabs = tabs.filter(tab => !tab.url.startsWith("chrome://"));
-  
-  for (const tab of filteredTabs) {
-    updateIcon(tab.id, tab.url, countdownActive);
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: manifest.content_scripts[0].js,
-    });
-  }
+    // Get all tabs
+    const tabs = await chrome.tabs.query({});
+    
+    for (const tab of tabs) {
+      
+      if (tab.url.startsWith("chrome://") || tab.url.startsWith("chrome-extension://") || tab.url.startsWith("https://chrome.google.com/webstore/")) {
+        continue; // Skip tabs with chrome:// or chrome-extension:// URLs
+      }
+      
+      // If the tab is snoozed/discarded/unloaded, skip
+      if (tab.status === "suspended" || tab.status === "discarded" || tab.status === "unloaded") {
+        continue;
+      }
+
+      console.log(tab.url, tab.status);
+      updateIcon(tab.id, tab.url, countdownActive);
+      
+      // Execute content script for valid URLs
+      try {
+        await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          files: manifest.content_scripts[0].js,
+        });
+      } catch (error) {  // If tab is still snoozed/discarded/unloaded, print warning and refresh page
+        console.warn(`Error executing content script for tab with URL: ${tab.url}: ${error}. Refreshing Page`);
+        chrome.tabs.reload(tab.id, {bypassCache: true });
+      }
+    }
+   });
 });
 
 // Listen for tab updates
@@ -198,6 +235,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     }, 500);
   } else if (changeInfo.url && !tab.url.includes('www.youtube.com/watch')) {
     stopCountdown();
+    clearCategoriesAndTags();
   }
 });
 
@@ -217,6 +255,23 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     // Now you have the videoID, you can use it in your background script logic
     // For example, you can fetch video details or start the countdown
     // ...
+  } else if (message.action === "updateOptions") {
+    // Update your background script logic based on the updated options
+    // For example, you might want to update blocked categories and tags
+    // based on the updated options.
+    
+    // Example: Update blocked categories and tags
+    if (message.blockedCategories) {
+      blockedCategories = message.blockedCategories;
+    }
+    if (message.blockedTags) {
+      blockedTags = message.blockedTags;
+    }
+
+    // Perform any other necessary actions with the updated options
+
+    // Send a response if needed
+    sendResponse({ message: "Options updated successfully" });
   }
 });
   
@@ -233,6 +288,7 @@ chrome.tabs.onActivated.addListener(activeInfo => {
       }, 500);
     } else {
       stopCountdown(); // Stop countdown if the tab is not a YouTube video
+      clearCategoriesAndTags();
     }
   });
 });
